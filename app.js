@@ -24,64 +24,41 @@ app.get('/', (req, res) => {
 app.use('/api/v1/cars', carsRouter);
 app.use('/api/v1/auth', authRouter);
 
-let user;
+global.user = {};
 
 // auth check
-async function checkAuthState() {
-  try {
-    const { data: session } = await supabase.auth.getSession();
+// async function checkAuthState() {
+//   try {
+//     const { data: session } = await supabase.auth.getSession();
     
-    if (session) {
-      user = session.user
-      console.log('User is authenticated:', session.user);
-    } else {
-      user = null
-      console.log('User is not authenticated');
-    }
+//     if (session) {
+//       user = session.user
+//       console.log('User is authenticated:', session.user);
+//     } else {
+//       user = null
+//       console.log('User is not authenticated');
+//     }
 
-    const { data: subscription } = await supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        user = session.user
-        console.log('Auth state changed. User is authenticated:', session.user);
-      } else {
-        user = null
-        console.log('Auth state changed. User is not authenticated');
-      }
-    });
+//     const { data: subscription } = await supabase.auth.onAuthStateChange((event, session) => {
+//       if (session) {
+//         user = session.user
+//         console.log('Auth state changed. User is authenticated:', session.user);
+//       } else {
+//         user = null
+//         console.log('Auth state changed. User is not authenticated');
+//       }
+//     });
 
-    // Unsubscribe when done
-    // await subscription.unsubscribe();
-  } catch (error) {
-    console.error('Error checking auth state:', error.message);
-  }
-}
+//     // Unsubscribe when done
+//     // await subscription.unsubscribe();
+//   } catch (error) {
+//     console.error('Error checking auth state:', error.message);
+//   }
+// }
 
-// Call the function
-checkAuthState();
-console.log(user)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// // Call the function
+// checkAuthState();
+// console.log(user)
 
 
 
