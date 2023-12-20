@@ -7,6 +7,7 @@ const cors = require("cors")
 
 const carsRouter = require('./routes/cars');
 const authRouter = require('./routes/auth');
+const requestsRouter = require("./routes/requests.js")
 
 
 const notFoundMiddleware = require('./middleware/not-found');
@@ -23,30 +24,29 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/cars', carsRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/requests', requestsRouter);
 
-global.user = {};
+
+// global.user['name'] = "abdi"
+// console.log(global.user)
 
 // auth check
-// async function checkAuthState() {
+// global.checkAuthState = async  () => {
 //   try {
 //     const { data: session } = await supabase.auth.getSession();
     
-//     if (session) {
-//       user = session.user
-//       console.log('User is authenticated:', session.user);
-//     } else {
-//       user = null
-//       console.log('User is not authenticated');
-//     }
+//     // if (session) {
+//     //   console.log('User is authenticated:', session);
+//     // } else {
+//     //   console.log('User is not authenticated');
+//     // }
 
-//     const { data: subscription } = await supabase.auth.onAuthStateChange((event, session) => {
-//       if (session) {
-//         user = session.user
-//         console.log('Auth state changed. User is authenticated:', session.user);
-//       } else {
-//         user = null
-//         console.log('Auth state changed. User is not authenticated');
-//       }
+//     const { data: authchange } = await supabase.auth.onAuthStateChange((event, session) => {
+//       // if (session) {
+//       //   console.log('Auth state changed. User is authenticated:', session.user);
+//       // } else {
+//       //   console.log('Auth state changed. User is not authenticated');
+//       // }
 //     });
 
 //     // Unsubscribe when done
@@ -58,7 +58,7 @@ global.user = {};
 
 // // Call the function
 // checkAuthState();
-// console.log(user)
+// // console.log(user)
 
 
 
