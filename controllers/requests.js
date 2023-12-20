@@ -33,7 +33,7 @@ const addRequest = async (req, res) => {
     let today = new Date().toISOString().split('T')[0]
     const { data, error } = await Supabase
         .from('requests')
-        .insert([{"status": "pending", start_date:"2023-12-19" , return_date:'2023-12-30', "renter_id": "9eb930e1-73d9-42a0-b928-545425d76160" , "car_id": 30}])
+        .insert([{"status": "pending", start_date:"2023-12-19" , return_date:'2023-12-30', "renter_id": "9cc9210d-4530-40f8-a13d-bd2af6d05801" , "car_id": 34}])
         .select("*").single()
     if (error) {
         return res.status(401).json({ error: error.message });
@@ -62,7 +62,7 @@ const getRecievedRequests = async (req, res) => {
     const { data, error } = await Supabase
         .from('requests')
         .select('cars(*), *')
-        .eq("cars.owner_id", user_id)
+        // .eq("cars.owner_id", user_id)
     if (error) {
         return res.status(401).json({ error: error.message });
     }
