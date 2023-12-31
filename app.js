@@ -8,6 +8,9 @@ const cors = require("cors")
 const carsRouter = require('./routes/cars');
 const authRouter = require('./routes/auth');
 const requestsRouter = require("./routes/requests.js")
+const bookingsRouter = require("./routes/bookings.js")
+const rentsRouter = require("./routes/rents.js")
+const notificationsRouter = require("./routes/notifications.js")
 
 
 const notFoundMiddleware = require('./middleware/not-found');
@@ -19,50 +22,16 @@ app.use(cors())
 // routes
 
 app.get('/', (req, res) => {
-  res.send('<h1>Store API</h1><a href="/api/v1/cars">products route</a>');
+  res.send('<h1>Store API</h1><a href="/api/v1/cars">Cars route</a>');
 });
 
 app.use('/api/v1/cars', carsRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/requests', requestsRouter);
+app.use('/api/v1/bookings', bookingsRouter);
+app.use('/api/v1/rents', rentsRouter);
+app.use('/api/v1/notifications', notificationsRouter);
 
-
-// global.user['name'] = "abdi"
-// console.log(global.user)
-
-// auth check
-// global.checkAuthState = async  () => {
-//   try {
-//     const { data: session } = await supabase.auth.getSession();
-    
-//     // if (session) {
-//     //   console.log('User is authenticated:', session);
-//     // } else {
-//     //   console.log('User is not authenticated');
-//     // }
-
-//     const { data: authchange } = await supabase.auth.onAuthStateChange((event, session) => {
-//       // if (session) {
-//       //   console.log('Auth state changed. User is authenticated:', session.user);
-//       // } else {
-//       //   console.log('Auth state changed. User is not authenticated');
-//       // }
-//     });
-
-//     // Unsubscribe when done
-//     // await subscription.unsubscribe();
-//   } catch (error) {
-//     console.error('Error checking auth state:', error.message);
-//   }
-// }
-
-// // Call the function
-// checkAuthState();
-// // console.log(user)
-
-
-
-// products route
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
