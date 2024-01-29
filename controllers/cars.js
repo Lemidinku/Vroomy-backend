@@ -80,6 +80,65 @@ const getAllCars = async (req, res) => {
   res.status(200).json({ size: cars.length, cars: cars });
 };
 
+// get owner's cars
+const getMyCars = async (req, res) => {
+  const { user_id: owner_id } = req.headers;
+  console.log(owner_id);
+  const {
+    make,
+    type,
+    electric,
+    seats,
+    sort: sort_param,
+    search: search_param,
+    query,
+  } = req.query;
+  console.log(req.query);
+  let result = Supabase.from("cars")
+    .select("*, profiles(*)")
+    .eq("owner_id", owner_id); // select all columns from cars and profiles table
+
+  // filter by seats
+  if (seats) {
+    result = result.gt("seating_capacity", parseInt(seats));
+  }
+  // filter by make
+  if (make) {
+    result = result.ilike("make_and_model", `%${make}%`);
+  }
+  // filter by Type
+  if (type) {
+    result = result.ilike("type", `%${type}%`);
+  }
+  // filter by Electric
+  if (electric) {
+    result = result.eq("is_electric", electric);
+  }
+
+  //sorting
+  if (sort_param === "price") {
+    result = result.order("daily_rental_fee", { ascending: true });
+  } else if (sort_param === "year") {
+    result = result.order("year", { ascending: false });
+  }
+
+  // search by car owner
+  if (search_param === "owner" && query) {
+    result = result.ilike("profiles.username", `%${query}%`);
+  }
+  // search by type
+  else if (query) {
+    result = result.ilike("type", `%${query}%`);
+  }
+  const { data: cars, error } = await result;
+
+  if (error) {
+    console.log(error.message);
+    return res.status(401).json({ error: error.message });
+  }
+  res.status(200).json({ size: cars.length, cars: cars });
+};
+
 // addCar
 
 const addCar = async (req, res) => {
@@ -111,24 +170,27 @@ const addCarStatic = async (req, res) => {
 const getCar = async (req, res) => {
   const { id } = req.params;
   const { data: car, error } = await Supabase.from("cars")
-    .select("*")
+    .select("*, profiles(*)")
     .eq("id", id)
     .single();
   if (error) {
     console.log(error.message);
     return res.status(401).json({ error });
   }
+  console.log(car);
   res.status(200).json(car);
 };
 // updateCar,
 const updateCar = async (req, res) => {
+  console.log(req.body);
   const { id } = req.params;
   const { data: updatedCar, error } = await Supabase.from("cars")
     .update({
       ...req.body,
     })
     .eq("id", id)
-    .eq("owner_id", req.headers.user_id);
+    .eq("owner_id", req.headers.user_id)
+    .select("*");
   if (error) {
     console.log(error.message);
     return res.status(401).json({ error });
@@ -157,4 +219,5 @@ module.exports = {
   updateCar,
   deleteCar,
   addCarStatic,
+  getMyCars,
 };
