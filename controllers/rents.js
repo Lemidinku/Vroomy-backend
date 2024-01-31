@@ -55,7 +55,7 @@ const getMyRents = async (req, res) => {
 // rateARent
 
 const rateARent = async (req, res) => {
-  const { user_id } = req.user;
+  const { user_id } = req.headers;
   const { id: rent_id } = req.params;
   const { rating, account_type } = req.body;
 
@@ -63,68 +63,33 @@ const rateARent = async (req, res) => {
     // check if the renter has already rated this rent
     const { data: renterSatisfaction, err } = await supabase
       .from("rents")
-      .select("renter_satisfaction")
+      .select("*")
       .eq("rent_id", rent_id)
-      .eq("renter_id", user_id)
       .single();
-
+    console.log("afdsf", renterSatisfaction);
     if (renterSatisfaction.renter_satisfaction != null) {
       res.status(400).json({
         error: "You have already rated this rent",
         ownerRating: renterSatisfaction,
       });
+      return;
     }
 
-    // update the renter's rating
+    // update the rent's rating
 
     const { data, error } = await supabase
       .from("rents")
       .update({ renter_satisfaction: rating })
       .eq("rent_id", rent_id)
-      .eq("renter_id", user_id)
       .eq("status", "completed")
       .select("car_id, renter_satisfaction")
       .single();
 
     if (error) {
-      res.status(400).json({ error: error.message });
+      return res.status(401).json({ error: error.message });
     }
-
-    // get the owner_id of the car
-    const { data: car, error: error2 } = await supabase
-      .from("cars")
-      .select("owner_id")
-      .eq("id", data.car_id)
-      .single();
-
-    if (error2) {
-      res.status(400).json({ error: error2.message });
-    }
-    // get the owner's rating, and add this rating to it
-    const { data: owner, error: error3 } = await supabase
-      .from("profiles")
-      .select("rating, rate_amount")
-      .eq("id", car.owner_id)
-      .single();
-
-    if (error3) {
-      res.status(400).json({ error: error3.message });
-    }
-
-    const newRating = owner.rating + rating;
-
-    // update the owner's rating
-    const { data: updatedOwner, error: error4 } = await supabase
-      .from("profiles")
-      .update({ rating: newRating, rate_amount: owner.rate_amount + 1 })
-      .eq("id", car.owner_id)
-      .select("*")
-      .single();
-
-    if (error4) {
-      res.status(400).json({ error: error4.message });
-    }
-    res.status(200).json(updatedOwner);
+    // console.log(data);
+    res.status(200).json(data);
   } else {
     // check if the owner has already rated this rent
     const { data: ownerSatisfaction, err } = await supabase
@@ -137,7 +102,7 @@ const rateARent = async (req, res) => {
       res.status(400).json({ error: err.message });
     }
     if (ownerSatisfaction.owner_satisfaction) {
-      res.status(400).json({
+      return res.status(400).json({
         error: "You have already rated this rent",
         renterRating: ownerSatisfaction,
       });
@@ -153,35 +118,8 @@ const rateARent = async (req, res) => {
       .single();
 
     if (error) {
-      res.status(400).json({ error: error.message });
-    }
-
-    // get the renter's rating, and add this rating to it
-    const { data: renter, error: error3 } = await supabase
-      .from("profiles")
-      .select("rating, rate_amount")
-      .eq("id", data.renter_id)
-      .single();
-
-    if (error3) {
-      res.status(400).json({ error: error3.message });
-    }
-
-    const newRating = renter.rating + rating;
-
-    // update the renter rating of the car
-    const { data: updatedRenter, error: error2 } = await supabase
-      .from("profiles")
-      .update({ rating: newRating, rate_amount: renter.rate_amount + 1 })
-      .eq("id", data.renter_id)
-      .select("*")
-      .single();
-
-    if (error2) {
-      res.status(400).json({ error: error2.message });
-    }
-
-    res.status(200).json(updatedRenter);
+      return res.status(400).json({ error: error.message });
+    } else return res.status(200).json({ error: null });
   }
 };
 

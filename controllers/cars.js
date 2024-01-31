@@ -83,7 +83,6 @@ const getAllCars = async (req, res) => {
 // get owner's cars
 const getMyCars = async (req, res) => {
   const { user_id: owner_id } = req.headers;
-  console.log(owner_id);
   const {
     make,
     type,
@@ -142,14 +141,19 @@ const getMyCars = async (req, res) => {
 // addCar
 
 const addCar = async (req, res) => {
-  const newCar = await Supabase.from("cars").insert([
+  console.log(req.body);
+  const { data, error } = await Supabase.from("cars").insert([
     {
       //this will be the data from the form
       ...req.body,
     },
   ]);
+  if (error) {
+    console.log(error.message);
+    return res.status(401).json({ error: error.message });
+  }
 
-  res.status(201).json(newCar);
+  res.status(201).json({ error });
 };
 // addCarStatic
 const addCarStatic = async (req, res) => {

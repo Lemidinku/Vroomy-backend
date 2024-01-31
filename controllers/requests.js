@@ -66,18 +66,21 @@ const addRequestStatic = async (req, res) => {
 // a renter can see all the requests they have sent
 const getSentRequests = async (req, res) => {
   const { user_id } = req.headers;
+  console.log(user_id, "sent requests");
   const { data, error } = await Supabase.from("requests")
-    .select("*")
+    .select("cars(*), *")
     .eq("renter_id", user_id);
   if (error) {
     return res.status(401).json({ error: error.message });
   }
+  console.log(data);
   res.status(200).json(data);
 };
 
 // a car owner can see all the requests they have recieved
 const getRecievedRequests = async (req, res) => {
   const { user_id } = req.headers;
+  console.log("getting recieved requests");
   console.log(user_id);
 
   const { data, error } = await Supabase.from("requests").select("cars(*), *");
