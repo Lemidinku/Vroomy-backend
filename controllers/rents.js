@@ -123,8 +123,23 @@ const rateARent = async (req, res) => {
   }
 };
 
+const getRent = async (req, res) => {
+  const { id: rent_id } = req.params;
+  const { data, error } = await supabase
+    .from("rents")
+    .select("*")
+    .eq("rent_id", rent_id)
+    .single();
+
+  if (error) {
+    return res.status(400).json({ error: error.message });
+  }
+  res.status(200).json(data);
+};
+
 module.exports = {
   getAllRents,
   getMyRents,
   rateARent,
+  getRent,
 };

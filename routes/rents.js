@@ -1,18 +1,16 @@
-const express = require('express')
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
 const {
-    getAllRents,
-    getMyRents,
-    rateARent
- 
-} = require('../controllers/rents')
+  getAllRents,
+  getMyRents,
+  rateARent,
+  getRent,
+} = require("../controllers/rents");
 
-router.route('/owner').get(getAllRents)
-router.route('/renter').get(getMyRents)
+router.route("/owner").get(getAllRents);
+router.route("/renter").get(getMyRents);
 
-router.route('/:id').post(rateARent)
+router.route("/:id").post(rateARent).get(getRent);
 
-
-
-module.exports = router
+module.exports = router;
